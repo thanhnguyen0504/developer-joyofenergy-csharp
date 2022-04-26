@@ -14,9 +14,9 @@ namespace JOIEnergy.Tests
 
         public MeterReadingServiceTest()
         {
-            meterReadingService = new MeterReadingService(new Dictionary<string, List<ElectricityReading>>());
+            meterReadingService = new MeterReadingService(new Dictionary<string, List<EnergyReading>>());
 
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-15), Reading = 30m }
             });
@@ -30,7 +30,7 @@ namespace JOIEnergy.Tests
         [Fact]
         public void GivenMeterReadingThatExistsShouldReturnMeterReadings()
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
                 new ElectricityReading() { Time = DateTime.Now, Reading = 25m }
             });
 

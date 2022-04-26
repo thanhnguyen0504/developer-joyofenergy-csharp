@@ -10,9 +10,9 @@ namespace JOIEnergy.Generator
         {
 
         }
-        public List<ElectricityReading> Generate(int number)
+        public List<EnergyReading> Generate(int number)
         {
-            var readings = new List<ElectricityReading>();
+            var readings = new List<EnergyReading>();
             var random = new Random();
             for (int i = 0; i < number; i++)
             {

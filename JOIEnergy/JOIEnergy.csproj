@@ -5,10 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\ConcreteCreator.cs" />
+    <Compile Remove="Domain\EnergyReadingFactory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Services\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Domain\" />
     <Folder Include="Generator\" />
   </ItemGroup>
 

@@ -66,8 +66,8 @@ namespace JOIEnergy
             app.UseMvc();
         }
 
-        private Dictionary<string, List<ElectricityReading>> GenerateMeterElectricityReadings() {
-            var readings = new Dictionary<string, List<ElectricityReading>>();
+        private Dictionary<string, List<EnergyReading>> GenerateMeterElectricityReadings() {
+            var readings = new Dictionary<string, List<EnergyReading>>();
             var generator = new ElectricityReadingGenerator();
             var smartMeterIds = SmartMeterToPricePlanAccounts.Select(mtpp => mtpp.Key);
 

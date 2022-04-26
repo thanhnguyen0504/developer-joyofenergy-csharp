@@ -6,22 +6,22 @@ namespace JOIEnergy.Services
 {
     public class MeterReadingService : IMeterReadingService
     {
-        public Dictionary<string, List<ElectricityReading>> MeterAssociatedReadings { get; set; }
-        public MeterReadingService(Dictionary<string, List<ElectricityReading>> meterAssociatedReadings)
+        public Dictionary<string, List<EnergyReading>> MeterAssociatedReadings { get; set; }
+        public MeterReadingService(Dictionary<string, List<EnergyReading>> meterAssociatedReadings)
         {
             MeterAssociatedReadings = meterAssociatedReadings;
         }
 
-        public List<ElectricityReading> GetReadings(string smartMeterId) {
+        public List<EnergyReading> GetReadings(string smartMeterId) {
             if (MeterAssociatedReadings.ContainsKey(smartMeterId)) {
                 return MeterAssociatedReadings[smartMeterId];
             }
-            return new List<ElectricityReading>();
+            return new List<EnergyReading>();
         }
 
-        public void StoreReadings(string smartMeterId, List<ElectricityReading> electricityReadings) {
+        public void StoreReadings(string smartMeterId, List<EnergyReading> electricityReadings) {
             if (!MeterAssociatedReadings.ContainsKey(smartMeterId)) {
-                MeterAssociatedReadings.Add(smartMeterId, new List<ElectricityReading>());
+                MeterAssociatedReadings.Add(smartMeterId, new List<EnergyReading>());
             }
 
             electricityReadings.ForEach(electricityReading => MeterAssociatedReadings[smartMeterId].Add(electricityReading));
