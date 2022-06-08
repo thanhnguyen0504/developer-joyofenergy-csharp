@@ -1,26 +1,40 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Domain\ConcreteCreator.cs" />
-    <Compile Remove="Domain\EnergyReadingFactory.cs" />
+    <Compile Remove="Domain\**" />
+    <Compile Remove="Enums\**" />
+    <Content Remove="Domain\**" />
+    <Content Remove="Enums\**" />
+    <EmbeddedResource Remove="Domain\**" />
+    <EmbeddedResource Remove="Enums\**" />
+    <None Remove="Domain\**" />
+    <None Remove="Enums\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <Folder Include="Services\" />
     <Folder Include="Generator\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JOIEnergy.Domain\JOIEnergy.Domain.csproj" />
+    <ProjectReference Include="..\JOIEnergy.Infrastructure\JOIEnergy.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

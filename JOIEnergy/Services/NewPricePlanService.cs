@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using JOIEnergy.Domain.Models;
+using JOIEnergy.Infrastructure.Repository;
 
 namespace JOIEnergy.Services
 {
-    public class PricePlanService : IPricePlanService
+    public class NewPricePlanService : IPricePlanService
     {
         public interface Debug { void Log(string s); };
 
-        private readonly List<ElectricityPricePlan> _pricePlans;
         private IMeterReadingService _meterReadingService;
+        private IRepository<ElectricityPricePlan> _pricePlanRepo;
 
-        public PricePlanService(List<ElectricityPricePlan> pricePlan, IMeterReadingService meterReadingService)
+        public NewPricePlanService(IRepository<ElectricityPricePlan> pricePlanRepo, IMeterReadingService meterReadingService)
         {
-            _pricePlans = pricePlan;
+            _pricePlanRepo = pricePlanRepo;
             _meterReadingService = meterReadingService;
         }
 
@@ -32,11 +33,11 @@ namespace JOIEnergy.Services
 
             return (decimal)(last - first).TotalHours;
         }
-        private decimal calculateCost(List<EnergyReadingBase> electricityReadings, EnergyPricePlanBase pricePlan)
+        private decimal calculateCost(List<EnergyReadingBase> electricityReadings, ElectricityPricePlan pricePlan)
         {
             var average = calculateAverageReading(electricityReadings);
             var timeElapsed = calculateTimeElapsed(electricityReadings);
-            var averagedCost = average/timeElapsed;
+            var averagedCost = average / timeElapsed;
             return averagedCost * pricePlan.UnitRate;
         }
 
@@ -48,7 +49,14 @@ namespace JOIEnergy.Services
             {
                 return new Dictionary<string, decimal>();
             }
-            return _pricePlans.ToDictionary(plan => plan.EnergySupplier.ToString(), plan => calculateCost(readings, plan));
+
+
+            
+
+            return _pricePlanRepo.All().ToDictionary(plan => plan.EnergySupplier.ToString(), plan => calculateCost(readings, plan));
         }
+
+
+
     }
 }

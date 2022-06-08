@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using JOIEnergy.Domain;
-using JOIEnergy.Enums;
+using JOIEnergy.Domain.Models;
+// using JOIEnergy.Enums;
+using JOIEnergy.Domain.Enums;
 using Xunit;
 
 namespace JOIEnergy.Tests
 {
     public class PricePlanTest
     {
-        private PricePlan _pricePlan;
+        private ElectricityPricePlan _pricePlan;
 
         public PricePlanTest()
         {
-            _pricePlan = new PricePlan
+            _pricePlan = new ElectricityPricePlan
             {
                 EnergySupplier = Supplier.TheGreenEco,
                 UnitRate = 20m,

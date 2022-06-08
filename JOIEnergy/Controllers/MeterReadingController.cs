@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JOIEnergy.Domain;
+using JOIEnergy.Domain.Models;
 using JOIEnergy.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +33,7 @@ namespace JOIEnergy.Controllers
         private bool IsMeterReadingsValid(MeterReadings meterReadings)
         {
             String smartMeterId = meterReadings.SmartMeterId;
-            List<EnergyReading> electricityReadings = meterReadings.ElectricityReadings;
+            List<ElectricityReading> electricityReadings = meterReadings.ElectricityReadings;
             return smartMeterId != null && smartMeterId.Any()
                     && electricityReadings != null && electricityReadings.Any();
         }

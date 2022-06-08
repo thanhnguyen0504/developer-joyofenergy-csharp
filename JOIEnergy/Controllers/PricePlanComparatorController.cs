@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using JOIEnergy.Enums;
+using JOIEnergy.Domain.Enums;
 using JOIEnergy.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JOIEnergy.Domain;
-using JOIEnergy.Enums;
+// using JOIEnergy.Enums;
+using JOIEnergy.Domain.Enums;
+using JOIEnergy.Domain.Models;
+using JOIEnergy.Infrastructure;
 using JOIEnergy.Generator;
 using JOIEnergy.Services;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using JOIEnergy.Infrastructure.Repository;
 
 namespace JOIEnergy
 {
@@ -25,34 +28,21 @@ namespace JOIEnergy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var readings =
-                GenerateMeterElectricityReadings();
 
-            var pricePlans = new List<PricePlan> {
-                new PricePlan{
-                    EnergySupplier = Enums.Supplier.DrEvilsDarkEnergy,
-                    UnitRate = 10m,
-                    PeakTimeMultiplier = new List<PeakTimeMultiplier>()
-                },
-                new PricePlan{
-                    EnergySupplier = Enums.Supplier.TheGreenEco,
-                    UnitRate = 2m,
-                    PeakTimeMultiplier = new List<PeakTimeMultiplier>()
-                },
-                new PricePlan{
-                    EnergySupplier = Enums.Supplier.PowerForEveryone,
-                    UnitRate = 1m,
-                    PeakTimeMultiplier = new List<PeakTimeMultiplier>()
-                }
-            };
-
+            CreateInitialDatabase();
             services.AddMvc(options => options.EnableEndpointRouting = false);
-            services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IMeterReadingService, MeterReadingService>();
-            services.AddTransient<IPricePlanService, PricePlanService>();
-            services.AddSingleton((IServiceProvider arg) => readings);
-            services.AddSingleton((IServiceProvider arg) => pricePlans);
-            services.AddSingleton((IServiceProvider arg) => SmartMeterToPricePlanAccounts);
+            // services.AddTransient<JOIEnergyContext>();
+            // services.AddScoped // for every session (request) that will not create new object
+            services.AddScoped<JOIEnergyContext>();
+            services.AddTransient<IRepository<ElectricityReading>, ElectricityReadingRepository>();
+            services.AddTransient<IRepository<ElectricitySmartMeter>, ElectricitySmartMeterRepository>();
+            services.AddTransient<IRepository<ElectricityPricePlan>, ElectricityPricePlanRepository>();
+            services.AddTransient<IAccountService, NewAccountService>();
+            services.AddTransient<IMeterReadingService, NewMeterReadingService>();
+            services.AddTransient<IPricePlanService, NewPricePlanService>(); // create new AddTransient 
+            
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,8 +56,73 @@ namespace JOIEnergy
             app.UseMvc();
         }
 
-        private Dictionary<string, List<EnergyReading>> GenerateMeterElectricityReadings() {
-            var readings = new Dictionary<string, List<EnergyReading>>();
+
+        public void CreateInitialDatabase()
+        {
+            using (var context = new JOIEnergyContext())
+            {
+
+                var generator = new ElectricityReadingGenerator();
+
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+
+                // init SmartMeters
+                var smartMeterRepository = new ElectricitySmartMeterRepository(context);
+                var Sarah = new ElectricitySmartMeter { Name = "Sarah", SmartMeterID = "smart-meter-0", PowerSupplier = Supplier.DrEvilsDarkEnergy };
+                var Peter = new ElectricitySmartMeter { Name = "Peter", SmartMeterID = "smart-meter-1", PowerSupplier = Supplier.TheGreenEco };
+                var Charlie = new ElectricitySmartMeter { Name = "Charlie", SmartMeterID = "smart-meter-2", PowerSupplier = Supplier.DrEvilsDarkEnergy };
+                var Andrea = new ElectricitySmartMeter { Name = "Andrea", SmartMeterID = "smart-meter-3", PowerSupplier = Supplier.PowerForEveryone };
+                var Alex = new ElectricitySmartMeter { Name = "Alex", SmartMeterID = "smart-meter-4", PowerSupplier = Supplier.TheGreenEco };
+
+
+                smartMeterRepository.Add(Sarah);
+                smartMeterRepository.Add(Peter);
+                smartMeterRepository.Add(Charlie);
+                smartMeterRepository.Add(Andrea);
+                smartMeterRepository.Add(Alex);
+                smartMeterRepository.SaveChanges();
+
+
+                var electricityReadingRepository = new ElectricityReadingRepository(context);
+                var smartMeterIds = SmartMeterToPricePlanAccounts.Select(mtpp => mtpp.Key);
+                foreach (var smartMeterId in smartMeterIds)
+                {
+                    var listElectricityReading = generator.Generate(20, smartMeterId);
+                    electricityReadingRepository.AddRange(listElectricityReading);
+                }
+                electricityReadingRepository.SaveChanges();
+
+
+                var pricePlans = new List<ElectricityPricePlan> {
+                    new ElectricityPricePlan{
+                        EnergySupplier = Domain.Enums.Supplier.DrEvilsDarkEnergy,
+                        UnitRate = 10m,
+                        //PeakTimeMultiplier = new List<PeakTimeMultiplier>()
+                    },
+                    new ElectricityPricePlan{
+                        EnergySupplier = Domain.Enums.Supplier.TheGreenEco,
+                        UnitRate = 2m,
+                        //PeakTimeMultiplier = new List<PeakTimeMultiplier>()
+                    },
+                    new ElectricityPricePlan{
+                        EnergySupplier = Domain.Enums.Supplier.PowerForEveryone,
+                        UnitRate = 1m
+                        //PeakTimeMultiplier = new List<PeakTimeMultiplier>()
+                    }
+                };
+
+                var pricePlanRepository = new ElectricityPricePlanRepository(context);
+                pricePlanRepository.AddRange(pricePlans);
+                pricePlanRepository.SaveChanges();
+
+            }
+        }
+
+
+
+        private Dictionary<string, List<ElectricityReading>> GenerateMeterElectricityReadings() {
+            var readings = new Dictionary<string, List<ElectricityReading>>();
             var generator = new ElectricityReadingGenerator();
             var smartMeterIds = SmartMeterToPricePlanAccounts.Select(mtpp => mtpp.Key);
 

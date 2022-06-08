@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JOIEnergy.Services;
-using JOIEnergy.Domain;
+using JOIEnergy.Domain.Models;
 using Xunit;
 
 namespace JOIEnergy.Tests
@@ -14,9 +14,9 @@ namespace JOIEnergy.Tests
 
         public MeterReadingServiceTest()
         {
-            meterReadingService = new MeterReadingService(new Dictionary<string, List<EnergyReading>>());
+            meterReadingService = new MeterReadingService(new Dictionary<string, List<EnergyReadingBase>>());
 
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-15), Reading = 30m }
             });
@@ -30,7 +30,7 @@ namespace JOIEnergy.Tests
         [Fact]
         public void GivenMeterReadingThatExistsShouldReturnMeterReadings()
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
                 new ElectricityReading() { Time = DateTime.Now, Reading = 25m }
             });
 

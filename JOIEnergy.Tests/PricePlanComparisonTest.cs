@@ -1,6 +1,7 @@
 ﻿using JOIEnergy.Controllers;
-using JOIEnergy.Domain;
-using JOIEnergy.Enums;
+using JOIEnergy.Domain.Models;
+// using JOIEnergy.Enums;
+using JOIEnergy.Domain.Enums;
 using JOIEnergy.Services;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,12 @@ namespace JOIEnergy.Tests
 
         public PricePlanComparisonTest()
         {
-            var readings = new Dictionary<string, List<Domain.EnergyReading>>();
+            var readings = new Dictionary<string, List<EnergyReadingBase>>();
             meterReadingService = new MeterReadingService(readings);
-            var pricePlans = new List<PricePlan>() { 
-                new PricePlan() { EnergySupplier = Supplier.DrEvilsDarkEnergy, UnitRate = 10, PeakTimeMultiplier = NoMultipliers() }, 
-                new PricePlan() { EnergySupplier = Supplier.TheGreenEco, UnitRate = 2, PeakTimeMultiplier = NoMultipliers() },
-                new PricePlan() { EnergySupplier = Supplier.PowerForEveryone, UnitRate = 1, PeakTimeMultiplier = NoMultipliers() } 
+            var pricePlans = new List<ElectricityPricePlan>() { 
+                new ElectricityPricePlan() { EnergySupplier = Supplier.DrEvilsDarkEnergy, UnitRate = 10, PeakTimeMultiplier = NoMultipliers() }, 
+                new ElectricityPricePlan() { EnergySupplier = Supplier.TheGreenEco, UnitRate = 2, PeakTimeMultiplier = NoMultipliers() },
+                new ElectricityPricePlan() { EnergySupplier = Supplier.PowerForEveryone, UnitRate = 1, PeakTimeMultiplier = NoMultipliers() } 
             };
             var pricePlanService = new PricePlanService(pricePlans, meterReadingService);
             var accountService = new AccountService(smartMeterToPricePlanAccounts);
@@ -36,7 +37,7 @@ namespace JOIEnergy.Tests
         {
             var electricityReading = new ElectricityReading() { Time = DateTime.Now.AddHours(-1), Reading = 15.0m };
             var otherReading = new ElectricityReading() { Time = DateTime.Now, Reading = 5.0m };
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() { electricityReading, otherReading });
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() { electricityReading, otherReading });
 
             Dictionary<string, decimal> result = controller.CalculatedCostForEachPricePlan(SMART_METER_ID).Value as Dictionary<string, decimal>;
 
@@ -50,7 +51,7 @@ namespace JOIEnergy.Tests
         [Fact]
         public void ShouldRecommendCheapestPricePlansNoLimitForMeterUsage()
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
                 new ElectricityReading() { Time = DateTime.Now, Reading = 3m }
             });
@@ -70,7 +71,7 @@ namespace JOIEnergy.Tests
         [Fact]
         public void ShouldRecommendLimitedCheapestPricePlansForMeterUsage() 
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-45), Reading = 5m },
                 new ElectricityReading() { Time = DateTime.Now, Reading = 20m }
             });
@@ -88,7 +89,7 @@ namespace JOIEnergy.Tests
         [Fact]
         public void ShouldRecommendCheapestPricePlansMoreThanLimitAvailableForMeterUsage()
         {
-            meterReadingService.StoreReadings(SMART_METER_ID, new List<EnergyReading>() {
+            meterReadingService.StoreReadings(SMART_METER_ID, new List<ElectricityReading>() {
                 new ElectricityReading() { Time = DateTime.Now.AddMinutes(-30), Reading = 35m },
                 new ElectricityReading() { Time = DateTime.Now, Reading = 3m }
             });

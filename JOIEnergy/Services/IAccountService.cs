@@ -1,5 +1,5 @@
-﻿using JOIEnergy.Enums;
-
+﻿// using JOIEnergy.Enums;
+using JOIEnergy.Domain.Enums;
 namespace JOIEnergy.Services
 {
     public interface IAccountService

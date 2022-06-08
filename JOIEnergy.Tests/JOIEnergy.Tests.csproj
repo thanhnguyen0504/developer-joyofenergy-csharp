@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Coderful.EntityFramework.Testing" Version="1.5.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -16,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JOIEnergy.Infrastructure\JOIEnergy.Infrastructure.csproj" />
     <ProjectReference Include="..\JOIEnergy\JOIEnergy.csproj" />
   </ItemGroup>
   <ItemGroup>

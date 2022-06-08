@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using JOIEnergy.Domain;
+using JOIEnergy.Domain.Models;
 
 namespace JOIEnergy.Services
 {
     public interface IMeterReadingService
     {
-        List<EnergyReading> GetReadings(string smartMeterId);
-        void StoreReadings(string smartMeterId, List<EnergyReading> electricityReadings);
+        List<EnergyReadingBase> GetReadings(string smartMeterId);
+        void StoreReadings(string smartMeterId, List<ElectricityReading> electricityReadings);
     }
 }
